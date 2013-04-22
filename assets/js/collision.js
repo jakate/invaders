@@ -25,8 +25,12 @@ Game.Collision = function(sw, sh) {
 	};
 
 	this.addObjects = function(objects) {
+		// clear areas
+		for (var t = 0; t < areas.length; t++) {
+			areas[t].objects = [];
+		}
+
 		for (var area = 0; area < areas.length; area++) {
-			areas[area].objects = [];
 			for (var i = 0; i < objects.length; i++) {
 				if(objects[i].x > areas[area].x &&
 					objects[i].x < areas[area].x + areas[area].width &&
@@ -34,6 +38,18 @@ Game.Collision = function(sw, sh) {
 					objects[i].y < areas[area].y + areas[area].height)
 				{
 					areas[area].objects.push(objects[i]);
+
+					var right       = areas[(area+1)];
+					var bottom      = areas[(area+(gridCols))];
+					var bottomRight = areas[(area+(gridCols+1))];
+					// the one on the right side of this area
+					if(right) right.objects.push(objects[i]);
+
+					// the one on the bottom side of this area
+					if(bottom) bottom.objects.push(objects[i]);
+
+					// the one on the bottom right side of this area
+					if(bottomRight) bottomRight.objects.push(objects[i]);
 				}
 			}
 		}
@@ -94,10 +110,12 @@ Game.Collision = function(sw, sh) {
 		ctx.strokeStyle = 'white';
 		ctx.stroke();
 
-		ctx.lineWidth=1;
-		ctx.fillStyle="#fff";
-		ctx.font="14px sans-serif";
-		ctx.fillText("Objects: " + area.objects.length, area.x, area.y + 20);
+		var l = area.objects.length;
+
+		ctx.lineWidth = 1;
+		ctx.fillStyle = l < 1 ? "#666" : "#00ff00";
+		ctx.font = "14px sans-serif";
+		ctx.fillText("Objects: " + l, area.x, area.y + 20);
 	};
 
 

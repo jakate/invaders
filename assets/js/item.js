@@ -12,6 +12,8 @@ Game.Item = function() {
 
 	this.type          = "";
 
+	this.color         = "#ff0099";
+
 	this.slowmode      = false;
 };
 
@@ -29,7 +31,7 @@ Game.Item.prototype.updatex = function(x){
 };
 
 Game.Item.prototype.render = function(ctx){
-	ctx.fillStyle = "#ff0099";
+	ctx.fillStyle = this.color;
 	ctx.fillRect(this.x, this.y, this.width, this.height);
 };
 

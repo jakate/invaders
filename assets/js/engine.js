@@ -43,6 +43,7 @@ Game.Engine = function() {
 		collision.createGrid();
 
 		player = new Game.Player();
+		player.color = "#0000ff";
 		player.type = "player";
 		player.update(canvas.width / 2 - player.width / 2, canvas.height - player.height);
 
@@ -82,7 +83,6 @@ Game.Engine = function() {
 		enemies.update();
 		particles.update();
 		prizes.update();
-
 		detectCollisions();
 
 		drawScene();
@@ -113,11 +113,25 @@ Game.Engine = function() {
 				bullets.kill(colliding[i].object1);
 			}
 
-			if(colliding[i].object1.type == "enemy" && colliding[i].object2.type == "bullet")
+			if(colliding[i].object1.type == "player" && colliding[i].object2.type == "prize")
 			{
-				particles.add(colliding[i].object1);
-				enemies.kill(colliding[i].object1);
-				bullets.kill(colliding[i].object2);
+				var prize = colliding[i].object2.prizes[colliding[i].object2.prize];
+				log(prize);
+				switch(prize) {
+					case 'speedammo' :
+						player.increaseShootingSpeed();
+						break;
+					case 'slowmotion' :
+						slowDown();
+						break;
+				}
+				particles.add(colliding[i].object2);
+				prizes.kill(colliding[i].object2);
+			}
+
+			if(colliding[i].object1.type == "player" && colliding[i].object2.type == "enemy")
+			{
+				log("game over");
 			}
 
 		}
@@ -151,16 +165,25 @@ Game.Engine = function() {
 		if(keysDown[39]) player.updatex(player.x + player.speedx);
 		if(keysDown[40]) player.updatey(player.y + player.speedy); // down
 
-
+		/*
 		if(keysDown[83]) {
-			bullets.slowDown();
-			enemies.slowDown();
-			particles.slowDown();
+			slowDown();
 		} else {
-			bullets.resetSpeed();
-			enemies.resetSpeed();
-			particles.resetSpeed();
+			resetSpeed();
 		}
+		*/
+	};
+
+	var slowDown = function(){
+		bullets.slowDown();
+		enemies.slowDown();
+		particles.slowDown();
+	};
+
+	var resetSpeed = function(){
+		bullets.resetSpeed();
+		enemies.resetSpeed();
+		particles.resetSpeed();
 	};
 
 	var addControls = function(){

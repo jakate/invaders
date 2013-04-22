@@ -12,8 +12,11 @@ Game.Prizes = function(sw) {
 		prize.width         = 20;
 		prize.height        = 20;
 		prize.type          = "prize";
+		prize.color         = "#00ff00";
 		prize.x             = Math.random() * this.stageWidth;
 		prize.y             = 0 - prize.height;
+
+		prize.prize         = Math.floor(Math.random()*prize.prizes.length);
 
 		prize.speedx        = 0;
 		prize.initialSpeedx = prize.speedx;
@@ -29,11 +32,7 @@ Game.Prizes.prototype = new Game.GroupItem();
 
 Game.Prize = function() {
 	this.prizes = ['slowmotion', 'speedammo'];
-	this.prize = null;
-
-	this.render = function(ctx){
-		ctx.fillStyle = "#00ff00";
-		ctx.fillRect(this.x, this.y, this.width, this.height);
-	};
+	this.prize  = null;
+	this.length = 5; // seconds
 };
 Game.Prize.prototype = new Game.Item();

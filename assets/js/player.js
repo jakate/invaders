@@ -11,9 +11,8 @@ Game.Player = function(){
 		this.shootingSpeed = this.shootingSpeed === 5 ? 30 : 5;
 	};
 
-	this.render = function(ctx){
-		ctx.fillStyle = "#0000ff";
-		ctx.fillRect(this.x, this.y, this.width, this.height);
+	this.increaseShootingSpeed = function() {
+		this.shootingSpeed = this.shootingSpeed * 2;
 	};
 };
 

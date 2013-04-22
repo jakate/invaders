@@ -15,6 +15,7 @@ Game.Enemies = function(sw) {
 		enemy.x             = Math.random() * this.stageWidth;
 		enemy.y             = 0 - enemy.height;
 		enemy.type          = "enemy";
+		enemy.color         = "#ff0000";
 
 		enemy.speedx        = Math.random()*4;
 		enemy.initialSpeedx = enemy.speedx;
@@ -57,11 +58,6 @@ Game.Enemies.prototype = new Game.GroupItem();
 
 Game.Enemy = function(){
 	this.direction = 1;
-
-	this.render = function(ctx){
-		ctx.fillStyle = "#ff0000";
-		ctx.fillRect(this.x, this.y, this.width, this.height);
-	};
 };
 
 Game.Enemy.prototype = new Game.Item();

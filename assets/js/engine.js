@@ -16,6 +16,8 @@ Game.Engine = function() {
 	var date;
 
 	var pause = false;
+	var debug = false;
+
 	var keysDown = [];
 
 	this.init = function(){
@@ -92,20 +94,11 @@ Game.Engine = function() {
 		particles.render(ctx);
 		player.render(ctx);
 		prizes.render(ctx);
-		collision.drawGrid(ctx);
+		if(debug) collision.drawGrid(ctx);
 	};
 
 	var detectCollisions = function() {
-		var e = enemies.getItems();
-		var b = bullets.getItems();
-		var p = prizes.getItems();
-
-		var arr = [];
-		var i = 0;
-		for (i = 0; i < e.length; i++) { arr.push(e[i]); }
-		for (i = 0; i < b.length; i++) { arr.push(b[i]); }
-		for (i = 0; i < p.length; i++) { arr.push(p[i]); }
-		arr.push(player);
+		var arr = getAllObjects();
 
 		collision.addObjects(arr);
 		var colliding = collision.detect();
@@ -130,16 +123,19 @@ Game.Engine = function() {
 		}
 	};
 
-	var detectCollision = function(item1, item2){
-		if(item1.x > item2.x &&
-		item1.x < item2.x + item2.width &&
-		item1.y > item2.y &&
-		item1.y < item2.y + item2.height)
-		{
-			return true;
-		}
+	var getAllObjects = function() {
+		var e = enemies.getItems();
+		var b = bullets.getItems();
+		var p = prizes.getItems();
 
-		return false;
+		var arr = [];
+		var i = 0;
+		for (i = 0; i < e.length; i++) { arr.push(e[i]); }
+		for (i = 0; i < b.length; i++) { arr.push(b[i]); }
+		for (i = 0; i < p.length; i++) { arr.push(p[i]); }
+		arr.push(player);
+
+		return arr;
 	};
 
 	var handleEvents = function(newDate) {
@@ -187,7 +183,7 @@ Game.Engine = function() {
 		for(var i=0; i<touches.length; i++)
 		{
 			var touch = touches[i];
-			player.update(touch.clientX, touch.clientY);
+			player.update(touch.clientX - player.width / 2, touch.clientY - player.height);
 		}
 	};
 
@@ -199,6 +195,7 @@ Game.Engine = function() {
 		if(keycode === 65) player.toggleAutoShoot();
 		if(keycode === 69) player.toggleShootingSpeed();
 		if(keycode === 81) togglePause();
+		if(keycode === 86) toggleDebug();
 	};
 
 	var keyboardUp = function(keycode) {
@@ -208,5 +205,9 @@ Game.Engine = function() {
 
 	var togglePause = function(){
 		pause = pause === true ? false : true;
+	};
+
+	var toggleDebug = function() {
+		debug = debug === true ? false : true;
 	};
 };

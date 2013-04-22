@@ -117,12 +117,13 @@ Game.Engine = function() {
 			{
 				var prize = colliding[i].object2.prizes[colliding[i].object2.prize];
 				log(prize);
+
 				switch(prize) {
 					case 'speedammo' :
-						player.increaseShootingSpeed();
+						//player.increaseShootingSpeed();
 						break;
 					case 'slowmotion' :
-						slowDown();
+						//slowDown();
 						break;
 				}
 				particles.add(colliding[i].object2);
@@ -165,13 +166,11 @@ Game.Engine = function() {
 		if(keysDown[39]) player.updatex(player.x + player.speedx);
 		if(keysDown[40]) player.updatey(player.y + player.speedy); // down
 
-		/*
 		if(keysDown[83]) {
 			slowDown();
 		} else {
 			resetSpeed();
 		}
-		*/
 	};
 
 	var slowDown = function(){

@@ -7,15 +7,7 @@ Game.Particles = function() {
 			var p = new Game.Particle();
 			p.x             = item.x + (Math.random() * item.width);
 			p.y             = item.y + (Math.random() * item.height);
-			p.width         = Math.random() * 2;
-			p.height        = p.width;
 			p.color         = item.color;
-
-			p.lived         = 0;
-			p.lifespan      = Math.random() * 140;
-
-			p.speedx        = Math.random() * p.moveSpeed - (p.moveSpeed / 2);
-			p.speedy        = Math.random() * p.moveSpeed - (p.moveSpeed / 2);
 
 			p.initialSpeedx = p.speedx;
 			p.initialSpeedy = p.speedy;
@@ -50,5 +42,15 @@ Game.Particle = function(){
 	this.moveSpeed = 4;
 	this.lifespan  = 40;
 	this.lived     = 0;
+
+	this.width     = Math.random() * 2;
+	this.height    = this.width;
+
+	this.lived     = 0;
+	this.lifespan  = Math.random() * 140;
+
+	this.speedx    = Math.random() * this.moveSpeed - (this.moveSpeed / 2);
+	this.speedy    = Math.random() * this.moveSpeed - (this.moveSpeed / 2);
 };
+
 Game.Particle.prototype = new Game.Item();

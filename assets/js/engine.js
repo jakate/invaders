@@ -177,12 +177,14 @@ Game.Engine = function() {
 		bullets.slowDown();
 		enemies.slowDown();
 		particles.slowDown();
+		prizes.slowDown();
 	};
 
 	var resetSpeed = function(){
 		bullets.resetSpeed();
 		enemies.resetSpeed();
 		particles.resetSpeed();
+		prizes.resetSpeed();
 	};
 
 	var addControls = function(){

@@ -4,16 +4,6 @@ Game.Bullets = function() {
 
 		var bullet    = new Game.Bullet();
 
-		bullet.width         = 2;
-		bullet.height        = 6;
-		bullet.type          = "bullet";
-
-		bullet.speedy        = 6;
-		bullet.initialSpeedy = 6;
-
-		bullet.speedx        = 0;
-		bullet.initialSpeedx = 0;
-
 		bullet.x = player.x + player.width / 2;
 		bullet.y = player.y;
 
@@ -40,5 +30,18 @@ Game.Bullets = function() {
 Game.Bullets.prototype = new Game.GroupItem();
 
 
-Game.Bullet = function() {};
+Game.Bullet = function() {
+
+	this.width         = 2;
+	this.height        = 6;
+	this.type          = "bullet";
+
+	this.speedy        = 6;
+	this.initialSpeedy = this.speedy;
+
+	this.speedx        = 0;
+	this.initialSpeedx = this.speedx;
+
+};
+
 Game.Bullet.prototype = new Game.Item();

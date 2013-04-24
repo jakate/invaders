@@ -17,16 +17,20 @@ Game.Player = function(){
 		this.shootingSpeed = this.shootingSpeed * 2;
 	};
 
-	this.render = function(ctx){
+	this.createShape = function(canvas, x, y) {
+		this.spriteCanvas = canvas;
+		this.spritex = x;
+		this.spritey = y;
+
+		var ctx = this.spriteCanvas.getContext('2d');
+
 		ctx.fillStyle = this.color;
 		ctx.beginPath();
-		ctx.moveTo(this.x + this.width / 2, this.y);
-		ctx.lineTo(this.x + this.width, this.y + this.height);
-		ctx.lineTo(this.x, this.y + this.height);
-		ctx.lineTo(this.x + this.width / 2, this.y);
+		ctx.moveTo(this.spritex + this.width / 2, this.spritey);
+		ctx.lineTo(this.spritex + this.width, this.spritey + this.height);
+		ctx.lineTo(this.spritex, this.spritey + this.height);
+		ctx.lineTo(this.spritex + this.width / 2, this.spritey);
 		ctx.fill();
-
-		//ctx.fillRect(this.x, this.y, this.width, this.height);
 	};
 };
 

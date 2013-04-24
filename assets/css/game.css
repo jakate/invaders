@@ -4,6 +4,6 @@ body {
 	margin:0;
 	padding:0;
 }
-#scene {
+canvas {
 	border: 1px solid red;
 }

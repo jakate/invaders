@@ -2,18 +2,31 @@ Game.Enemies = function(sw) {
 
 	var self = this;
 
-	this.stageWidth = sw;
-
+	this.stageWidth    = sw;
 	this.lastSpawn     = 0;
 	this.spawningSpeed = 1; // per second
+	this.spawned       = 0;
 
-	this.addEnemy = function() {
+	var enemyTypes    = 10;
+
+	this.addEnemy = function(sprite) {
 		var enemy = new Game.Enemy();
-		enemy.createShape();
 		enemy.x   = Math.random() * this.stageWidth;
 		enemy.y   = 0 - enemy.height;
 
 		self.items.push(enemy);
+
+		this.spawned++;
+
+		if(this.spawned > enemyTypes) {
+			var spri = sprite.getSpriteOfType('enemy');
+
+			enemy.spritex = spri.x;
+			enemy.spritey = spri.y;
+			enemy.spriteCanvas = sprite.getCanvas();
+		}
+
+		return enemy;
 	};
 
 
@@ -52,17 +65,24 @@ Game.Enemy = function(){
 Game.Enemy.prototype = new Game.Item();
 
 
-Game.Enemy.prototype.createShape = function() {
+Game.Enemy.prototype.createShape = function(canvas, x, y) {
+
+	if( this.spritex !== 0 || this.spritey !== 0 ) return false;
+
 	var rows      = 5;
 	var columns   = 5;
-
 	var tmpshape  = [];
 
 	var i = 0;
 	var c = 0;
-	var p = 0;
 
-	this.size = this.width / columns;
+	this.spriteCanvas = canvas;
+	this.spritex = x;
+	this.spritey = y;
+
+	var ctx = this.spriteCanvas.getContext('2d');
+
+	this.size = this.width / columns-1;
 
 	for (i = 0; i < rows; i++) {
 
@@ -82,29 +102,28 @@ Game.Enemy.prototype.createShape = function() {
 
 	for (i = 0; i < tmpshape.length; i++) {
 
-		for (p = 0; p < tmpshape[i].length; p++) {
-			var newcol = columns-p;
-			tmpshape[i][newcol] = { x: newcol*this.size, y: tmpshape[i][p].y, draw: tmpshape[i][p].draw};
+		for (c = 0; c < tmpshape[i].length; c++) {
+			var newcol = columns-c;
+			tmpshape[i][newcol] = { x: newcol*this.size, y: tmpshape[i][c].y, draw: tmpshape[i][c].draw};
 
 		}
 	}
 
 	for (i = 0; i < tmpshape.length; i++) {
 
-		for (p = 0; p < tmpshape[i].length; p++) {
-			this.shape.push(tmpshape[i][p]);
+		for (c = 0; c < tmpshape[i].length; c++) {
+			this.shape.push(tmpshape[i][c]);
 		}
 	}
 
-};
 
-Game.Enemy.prototype.render = function(ctx) {
 	ctx.fillStyle = this.color;
 
-	for (var i = 0; i < this.shape.length; i++) {
+	for (i = 0; i < this.shape.length; i++) {
 		if(this.shape[i].draw)
 		{
-			ctx.fillRect( this.x + this.shape[i].x, this.y + this.shape[i].y, this.size, this.size);
+			ctx.fillRect( this.spritex + this.shape[i].x, this.spritey + this.shape[i].y, this.size, this.size);
 		}
 	}
+
 };

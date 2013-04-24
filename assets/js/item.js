@@ -4,6 +4,10 @@ Game.Item = function() {
 	this.width         = 50;
 	this.height        = 30;
 
+	this.spriteCanvas  = null;
+	this.spritex       = 0;
+	this.spritey       = 0;
+
 	this.speedy        = 12;
 	this.initialSpeedy = 10;
 
@@ -15,6 +19,7 @@ Game.Item = function() {
 	this.color         = "#ff0099";
 
 	this.slowmode      = false;
+	this.spriteCanvas  = null;
 };
 
 Game.Item.prototype.update = function(x, y){
@@ -31,13 +36,26 @@ Game.Item.prototype.updatex = function(x){
 };
 
 Game.Item.prototype.render = function(ctx){
-	ctx.fillStyle = this.color;
-	ctx.fillRect(this.x, this.y, this.width, this.height);
+	if(this.spriteCanvas)
+	{
+		ctx.drawImage(this.spriteCanvas, this.spritex, this.spritey, this.width, this.height, this.x, this.y, this.width, this.height);
+	}
+	else
+	{
+		ctx.fillStyle = this.color;
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
 };
 
+Game.Item.prototype.createShape = function(canvas, x, y) {
+	this.spriteCanvas = canvas;
+	this.spritex = x;
+	this.spritey = y;
+
+	var ctx = this.spriteCanvas.getContext('2d');
+};
 Game.Item.prototype.slowDown = function() {
 	this.slowmode = true;
-
 	this.speedx   = this.initialSpeedx * 0.2;
 	this.speedy   = this.initialSpeedy * 0.2;
 };
@@ -46,7 +64,6 @@ Game.Item.prototype.resetSpeed = function() {
 	if(this.slowmode === true) {
 		this.speedx   = this.initialSpeedx;
 		this.speedy   = this.initialSpeedy;
-
 		this.slowmode = false;
 	}
 };

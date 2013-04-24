@@ -1,11 +1,16 @@
 Game.Engine = function() {
 
+	var objectSize   = 32;
+
+	var self = this;
+
 	var player;
 	var bullets;
 	var enemies;
 	var particles;
 	var prizes;
 	var collision;
+	var sprite;
 
 	var stageWidth;
 	var stageHeight;
@@ -33,27 +38,33 @@ Game.Engine = function() {
 		canvas.height = stageHeight;
 		ctx           = canvas.getContext('2d');
 
-		//$('#scene').css('cursor','none');
+		sprite = new Game.Sprite();
+		sprite.init();
 
 		date      = new Date().getTime();
 		bullets   = new Game.Bullets();
 		particles = new Game.Particles();
+
 		enemies   = new Game.Enemies(stageWidth);
+		enemies.spriteCanvas = sprite.getCanvas();
+
 		prizes    = new Game.Prizes(stageWidth);
 		collision = new Game.Collision(stageWidth, stageHeight);
 		collision.createGrid();
 
-		player = new Game.Player();
-		player.color = "#0000ff";
-		player.type = "player";
+		player              = new Game.Player();
+		player.spriteCanvas = sprite.getCanvas();
+		player.color        = "#0000ff";
+		player.type         = "player";
+
 		player.update(canvas.width / 2 - player.width / 2, canvas.height - player.height);
+		sprite.addShapeToSprite(player);
 
 		addControls();
 		update();
 	};
 
-	var update = function(){
-
+	var update = function() {
 		requestAnimFrame(update);
 
 		if(pause) return;
@@ -65,7 +76,8 @@ Game.Engine = function() {
 		var canSpawnEnemy = (enemies.lastSpawn + (1000 / enemies.spawningSpeed) < newDate);
 		if(canSpawnEnemy)
 		{
-			enemies.addEnemy();
+			var enemy = enemies.addEnemy(sprite);
+			sprite.addShapeToSprite(enemy);
 			enemies.lastSpawn = newDate;
 		}
 
@@ -95,7 +107,16 @@ Game.Engine = function() {
 		particles.render(ctx);
 		player.render(ctx);
 		prizes.render(ctx);
-		if(debug) collision.drawGrid(ctx);
+
+		if(debug) {
+			collision.drawGrid(ctx);
+			sprite.showDebug();
+		}
+		else
+		{
+			sprite.hideDebug();
+		}
+
 	};
 
 	var detectCollisions = function() {

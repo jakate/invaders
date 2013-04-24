@@ -37,19 +37,38 @@ Game.Collision = function(sw, sh) {
 					objects[i].y > areas[area].y &&
 					objects[i].y < areas[area].y + areas[area].height)
 				{
-					areas[area].objects.push(objects[i]);
+					var object = objects[i];
 
-					var right       = areas[(area+1)];
-					var bottom      = areas[(area+(gridCols))];
-					var bottomRight = areas[(area+(gridCols+1))];
+					areas[area].objects.push(object);
+
 					// the one on the right side of this area
-					if(right) right.objects.push(objects[i]);
+					var right       = areas[(area+1)];
 
 					// the one on the bottom side of this area
-					if(bottom) bottom.objects.push(objects[i]);
+					var bottom      = areas[(area+(gridCols))];
 
 					// the one on the bottom right side of this area
-					if(bottomRight) bottomRight.objects.push(objects[i]);
+					var bottomRight = areas[(area+(gridCols+1))];
+
+					var r = false;
+					var b = false;
+
+					if(object.x + object.width > areas[area].x + areas[area].width)
+					{
+						if(right) right.objects.push(object);
+						r = true;
+					}
+
+					if(object.y + object.height > areas[area].y + areas[area].height)
+					{
+						if(bottom) bottom.objects.push(object);
+						b = true;
+					}
+
+					if(b === true && r === true)
+					{
+						if(bottomRight) bottomRight.objects.push(object);
+					}
 				}
 			}
 		}

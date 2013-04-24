@@ -15,8 +15,9 @@ Game.Engine = function() {
 
 	var date;
 
-	var pause = false;
-	var debug = false;
+	var pause  = false;
+	var slowmo = false;
+	var debug  = false;
 
 	var keysDown = [];
 
@@ -116,16 +117,8 @@ Game.Engine = function() {
 			if(colliding[i].object1.type == "player" && colliding[i].object2.type == "prize")
 			{
 				var prize = colliding[i].object2.prizes[colliding[i].object2.prize];
-				log(prize);
 
-				switch(prize) {
-					case 'speedammo' :
-						//player.increaseShootingSpeed();
-						break;
-					case 'slowmotion' :
-						//slowDown();
-						break;
-				}
+				givePrize(prize);
 				particles.add(colliding[i].object2);
 				prizes.kill(colliding[i].object2);
 			}
@@ -134,7 +127,28 @@ Game.Engine = function() {
 			{
 				log("game over");
 			}
+		}
+	};
 
+	var givePrize = function(prize) {
+		log(prize);
+
+		switch(prize) {
+			case 'speedammo' :
+				//player.increaseShootingSpeed();
+				break;
+			case 'slowmotion' :
+				//slowDown();
+				break;
+			case 'ammox3' :
+
+				break;
+			case 'ammox5':
+
+				break;
+			case 'shield':
+
+				break;
 		}
 	};
 
@@ -165,11 +179,19 @@ Game.Engine = function() {
 		if(keysDown[38]) player.updatey(player.y - player.speedy); // up
 		if(keysDown[39]) player.updatex(player.x + player.speedx);
 		if(keysDown[40]) player.updatey(player.y + player.speedy); // down
+	};
 
-		if(keysDown[83]) {
-			slowDown();
-		} else {
+
+	var toggleSpeed = function(){
+		if(slowmo === true)
+		{
+			slowmo = false;
 			resetSpeed();
+		}
+		else
+		{
+			slowmo = true;
+			slowDown();
 		}
 	};
 
@@ -216,10 +238,11 @@ Game.Engine = function() {
 
 		keysDown[keycode] = 1;
 
-		if(keycode === 65) player.toggleAutoShoot();
-		if(keycode === 69) player.toggleShootingSpeed();
-		if(keycode === 81) togglePause();
-		if(keycode === 86) toggleDebug();
+		if(keycode === 65) player.toggleAutoShoot(); // a
+		if(keycode === 69) player.toggleShootingSpeed(); // e
+		if(keycode === 81) togglePause(); // q
+		if(keycode === 86) toggleDebug(); // v
+		if(keycode === 83) toggleSpeed(); // s
 	};
 
 	var keyboardUp = function(keycode) {

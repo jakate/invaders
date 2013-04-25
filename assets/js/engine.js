@@ -177,7 +177,20 @@ Game.Engine = function() {
 	};
 
 	var givePrize = function(prize) {
-		log(prize);
+		var data = "<h1 class='splash'>" + prize + "</h1>";
+
+		$('body').append(data);
+		var top = $(window).height() / 2 - $('.splash').height();
+
+		$('.splash').css({
+			'top': top + "px"
+		});
+
+		$('.splash').animate({
+			'opacity': 0
+		}, 3000, function() {
+			$('.splash').remove();
+		});
 
 		switch(prize) {
 			case 'speedammo' :
@@ -232,20 +245,6 @@ Game.Engine = function() {
 		if(keysDown[38]) player.updatey(player.y - player.speedy); // up
 		if(keysDown[39]) player.updatex(player.x + player.speedx);
 		if(keysDown[40]) player.updatey(player.y + player.speedy); // down
-	};
-
-
-	var toggleSpeed = function(){
-		if(slowmo === true)
-		{
-			slowmo = false;
-			resetSpeed();
-		}
-		else
-		{
-			slowmo = true;
-			slowDown();
-		}
 	};
 
 	var slowDown = function(){
@@ -304,5 +303,18 @@ Game.Engine = function() {
 
 	var toggleDebug = function() {
 		debug = debug === true ? false : true;
+	};
+
+	var toggleSpeed = function(){
+		if(slowmo === true)
+		{
+			slowmo = false;
+			resetSpeed();
+		}
+		else
+		{
+			slowmo = true;
+			slowDown();
+		}
 	};
 };

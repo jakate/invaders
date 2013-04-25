@@ -1,15 +1,28 @@
 html,
 body {
+	font-family: Arial;
 	background: #000;
 	margin:0;
 	padding:0;
 }
 canvas {
 	border: 1px solid red;
+	position: relative;
+	z-index: 100;
 }
 #sprite_canvas {
 	background: #000;
 	position: absolute;
 	top:0;
 	right:0;
+}
+
+.splash {
+	font-size: 40px;
+	position: absolute;
+	display: block;
+	width: 100%;
+	color: #fff;
+	z-index: 99;
+	text-align: center;
 }

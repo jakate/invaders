@@ -20,7 +20,7 @@ Game.Prizes = function() {
 		prize.speedx        = 0;
 		prize.initialSpeedx = prize.speedx;
 
-		prize.speedy        = 0.08;
+		prize.speedy        = 0.28;
 		prize.initialSpeedy = prize.speedy;
 
 		self.items.push(prize);

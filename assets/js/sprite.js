@@ -11,6 +11,7 @@ Game.Sprite = function() {
 
 	this.init = function() {
 		spriteCanvas        = document.createElement('canvas');
+		spriteCanvas.id     = "sprite_canvas";
 		spriteCanvas.width  = 500;
 		spriteCanvas.height = 350;
 
@@ -26,6 +27,7 @@ Game.Sprite = function() {
 		var itemType = "";
 		var item;
 		var k;
+
 		while(itemType != type)
 		{
 			k        = Math.ceil( Math.random() * (sprites.length-1) );

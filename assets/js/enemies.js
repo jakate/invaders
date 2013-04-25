@@ -1,8 +1,7 @@
-Game.Enemies = function(sw) {
+Game.Enemies = function() {
 
 	var self = this;
 
-	this.stageWidth    = sw;
 	this.lastSpawn     = 0;
 	this.spawningSpeed = 1; // per second
 	this.spawned       = 0;
@@ -27,19 +26,6 @@ Game.Enemies = function(sw) {
 		}
 
 		return enemy;
-	};
-
-
-	this.update = function() {
-		for (var i = 0; i < this.items.length; i++) {
-
-			var enemy = this.items[i];
-
-			if(enemy.x > this.stageWidth) enemy.speedx *= -1;
-			if(enemy.x < 0) enemy.speedx *= -1;
-
-			enemy.update(enemy.x + enemy.speedx, enemy.y + enemy.speedy);
-		}
 	};
 };
 

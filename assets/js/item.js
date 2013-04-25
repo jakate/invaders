@@ -54,16 +54,3 @@ Game.Item.prototype.createShape = function(canvas, x, y) {
 
 	var ctx = this.spriteCanvas.getContext('2d');
 };
-Game.Item.prototype.slowDown = function() {
-	this.slowmode = true;
-	this.speedx   = this.initialSpeedx * 0.2;
-	this.speedy   = this.initialSpeedy * 0.2;
-};
-
-Game.Item.prototype.resetSpeed = function() {
-	if(this.slowmode === true) {
-		this.speedx   = this.initialSpeedx;
-		this.speedy   = this.initialSpeedy;
-		this.slowmode = false;
-	}
-};

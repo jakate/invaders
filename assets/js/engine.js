@@ -1,24 +1,16 @@
 Game.Engine = function() {
 
-	var objectSize   = 32;
-
 	var self = this;
 
-	var player;
-	var bullets;
-	var enemies;
-	var particles;
-	var prizes;
-	var collision;
-	var sprite;
+	var player, bullets, enemies, particles, prizes, collision, sprite;
 
-	var stageWidth;
-	var stageHeight;
+	var stageWidth, stageHeight;
 
-	var canvas;
-	var ctx;
+	var canvas, ctx;
 
-	var date;
+	var date, newDate, timePassed;
+
+	var canSpawnEnemy, canSpawnPrize;
 
 	var pause  = false;
 	var slowmo = false;
@@ -26,9 +18,16 @@ Game.Engine = function() {
 
 	var keysDown = [];
 
+	var stats;
+
 	this.init = function(){
 
 		console.log("init...");
+
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+		document.getElementById('body').appendChild( stats.domElement );
 
 		stageWidth  = $(window).width() - 2;
 		stageHeight = $(window).height() - 2;
@@ -42,13 +41,15 @@ Game.Engine = function() {
 		sprite.init();
 
 		date      = new Date().getTime();
+
 		bullets   = new Game.Bullets();
 		particles = new Game.Particles();
+		enemies   = new Game.Enemies();
 
-		enemies   = new Game.Enemies(stageWidth);
 		enemies.spriteCanvas = sprite.getCanvas();
 
-		prizes    = new Game.Prizes(stageWidth);
+		prizes    = new Game.Prizes();
+
 		collision = new Game.Collision(stageWidth, stageHeight);
 		collision.createGrid();
 
@@ -60,33 +61,31 @@ Game.Engine = function() {
 		player.update(canvas.width / 2 - player.width / 2, canvas.height - player.height);
 		sprite.addShapeToSprite(player);
 
+		setSizes();
 		addControls();
 		update();
 	};
 
+	var setSizes = function() {
+		bullets.updateStage(stageWidth, stageHeight);
+		particles.updateStage(stageWidth, stageHeight);
+		enemies.updateStage(stageWidth, stageHeight);
+		prizes.updateStage(stageWidth, stageHeight);
+	};
+
 	var update = function() {
+		stats.begin();
+
 		requestAnimFrame(update);
 
 		if(pause) return;
 
-		var newDate = new Date().getTime();
-		var timePassed = newDate - date;
+		newDate = new Date().getTime();
+		timePassed = newDate - date;
 		date = newDate;
 
-		var canSpawnEnemy = (enemies.lastSpawn + (1000 / enemies.spawningSpeed) < newDate);
-		if(canSpawnEnemy)
-		{
-			var enemy = enemies.addEnemy(sprite);
-			sprite.addShapeToSprite(enemy);
-			enemies.lastSpawn = newDate;
-		}
-
-		var canSpawnPrize = (prizes.lastSpawn + (1000 / prizes.spawningSpeed) < newDate);
-		if(canSpawnPrize)
-		{
-			prizes.addPrize();
-			prizes.lastSpawn = newDate;
-		}
+		spawnEnemies();
+		spawnPrize();
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -99,6 +98,29 @@ Game.Engine = function() {
 		detectCollisions();
 
 		drawScene();
+
+		stats.end();
+	};
+
+	var spawnPrize = function() {
+		canSpawnPrize = (prizes.lastSpawn + (1000 / prizes.spawningSpeed) < newDate);
+
+		if(canSpawnPrize)
+		{
+			prizes.addPrize();
+			prizes.lastSpawn = newDate;
+		}
+	};
+
+	var spawnEnemies = function() {
+		canSpawnEnemy = (enemies.lastSpawn + (1000 / enemies.spawningSpeed) < newDate);
+
+		if(canSpawnEnemy)
+		{
+			var enemy = enemies.addEnemy(sprite);
+			sprite.addShapeToSprite(enemy);
+			enemies.lastSpawn = newDate;
+		}
 	};
 
 	var drawScene = function() {
@@ -120,12 +142,14 @@ Game.Engine = function() {
 	};
 
 	var detectCollisions = function() {
-		var arr = getAllObjects();
+		var allStageObjects = getAllObjects();
 
-		collision.addObjects(arr);
+		collision.addObjects(allStageObjects);
+
 		var colliding = collision.detect();
+		var u = colliding.length;
 
-		for (i = 0; i < colliding.length; i++) {
+		for (i = 0; i < u; i++) {
 			//log(colliding[i].object1.type + " and " + colliding[i].object2.type + " are colliding...");
 
 			if(colliding[i].object1.type == "bullet" && colliding[i].object2.type == "enemy")
@@ -180,10 +204,17 @@ Game.Engine = function() {
 		var p = prizes.getItems();
 
 		var arr = [];
-		var i = 0;
-		for (i = 0; i < e.length; i++) { arr.push(e[i]); }
-		for (i = 0; i < b.length; i++) { arr.push(b[i]); }
-		for (i = 0; i < p.length; i++) { arr.push(p[i]); }
+		var i   = 0;
+		var u   = e.length;
+
+		for (i = 0; i < u; i++) { arr.push(e[i]); }
+
+		u = b.length;
+		for (i = 0; i < u; i++) { arr.push(b[i]); }
+
+		u = p.length;
+		for (i = 0; i < u; i++) { arr.push(p[i]); }
+
 		arr.push(player);
 
 		return arr;
@@ -247,12 +278,8 @@ Game.Engine = function() {
 	var onPointerDown = function(e)
 	{
 		var touches = e.getPointerList();
-
-		for(var i=0; i<touches.length; i++)
-		{
-			var touch = touches[i];
-			player.update(touch.clientX - player.width / 2, touch.clientY - player.height);
-		}
+		var touch = touches[0];
+		player.update(touch.clientX - player.width / 2, touch.clientY - player.height);
 	};
 
 	var keyboardDown = function (keycode) {
@@ -270,7 +297,6 @@ Game.Engine = function() {
 	var keyboardUp = function(keycode) {
 		keysDown[keycode] = null;
 	};
-
 
 	var togglePause = function(){
 		pause = pause === true ? false : true;

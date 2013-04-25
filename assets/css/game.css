@@ -7,3 +7,9 @@ body {
 canvas {
 	border: 1px solid red;
 }
+#sprite_canvas {
+	background: #000;
+	position: absolute;
+	top:0;
+	right:0;
+}

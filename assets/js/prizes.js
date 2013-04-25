@@ -1,10 +1,9 @@
-Game.Prizes = function(sw) {
+Game.Prizes = function() {
 
 	var self = this;
 
 	this.lastSpawn     = 0;
 	this.spawningSpeed = 0.1; // per second
-	this.stageWidth    = sw;
 
 	this.addPrize = function() {
 		var prize = new Game.Prize();
@@ -21,14 +20,13 @@ Game.Prizes = function(sw) {
 		prize.speedx        = 0;
 		prize.initialSpeedx = prize.speedx;
 
-		prize.speedy        = Math.random()*0.2 + 0.2;
+		prize.speedy        = 0.08;
 		prize.initialSpeedy = prize.speedy;
 
 		self.items.push(prize);
 	};
 };
 Game.Prizes.prototype = new Game.GroupItem();
-
 
 
 

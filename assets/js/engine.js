@@ -92,10 +92,10 @@ Game.Engine = function() {
 
 		handleEvents(newDate);
 
-		bullets.update();
-		enemies.update();
-		particles.update();
-		prizes.update();
+		bullets.update(timePassed);
+		enemies.update(timePassed);
+		particles.update(timePassed);
+		prizes.update(timePassed);
 		detectCollisions();
 
 		drawScene();
@@ -135,7 +135,8 @@ Game.Engine = function() {
 				bullets.kill(colliding[i].object1);
 			}
 
-			if(colliding[i].object1.type == "player" && colliding[i].object2.type == "prize")
+			if((colliding[i].object1.type == "player" && colliding[i].object2.type == "prize") ||
+				(colliding[i].object1.type == "bullet" && colliding[i].object2.type == "prize"))
 			{
 				var prize = colliding[i].object2.prizes[colliding[i].object2.prize];
 

@@ -2,10 +2,16 @@ Game.GroupItem = function() {
 	this.items  = [];
 };
 
-Game.GroupItem.prototype.update = function() {
+Game.GroupItem.prototype.update = function(timePassed) {
+	timePassed = timePassed/5;
+
 	for (var t = 0; t < this.items.length; t++) {
 		var item = this.items[t];
-		item.update(item.x + item.speedx, item.y + item.speedy);
+
+		var tox = item.x + (item.speedx * timePassed);
+		var toy = item.y + (item.speedy * timePassed);
+
+		item.update(tox, toy);
 	}
 };
 

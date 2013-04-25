@@ -21,7 +21,7 @@ Game.Prizes = function(sw) {
 		prize.speedx        = 0;
 		prize.initialSpeedx = prize.speedx;
 
-		prize.speedy        = Math.random()*2;
+		prize.speedy        = Math.random()*0.2 + 0.2;
 		prize.initialSpeedy = prize.speedy;
 
 		self.items.push(prize);

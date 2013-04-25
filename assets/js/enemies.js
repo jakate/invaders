@@ -52,7 +52,8 @@ Game.Enemy = function(){
 
 	this.type          = "enemy";
 	this.color         = "#ff0000";
-	this.speedx        = Math.random()*4;
+
+	this.speedx        = Math.random()*2;
 	this.initialSpeedx = this.speedx;
 
 	this.speedy        = Math.random()*2;

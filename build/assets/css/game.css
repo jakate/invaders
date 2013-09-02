@@ -25,4 +25,10 @@ canvas {
 	color: #fff;
 	z-index: 99;
 	text-align: center;
+
+	-webkit-transform: rotateZ(360deg);
+	-moz-transform: rotateZ(360deg);
+	-o-transform: rotateZ(360deg);
+	-ms-transform: rotateZ(360deg);
+	transform: rotateZ(360deg);
 }

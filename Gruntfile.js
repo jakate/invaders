@@ -35,8 +35,7 @@ module.exports = function(grunt) {
           'src/assets/js/sprite.js',
           'src/assets/js/game.js'
         ],
-        //dest: 'src/assets/js/invaders.concat.js'
-        dest: 'build/assets/js/invaders.min.js'
+        dest: 'src/assets/js/invaders.concat.js'
       }
     },
 
@@ -68,6 +67,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task.
-  grunt.registerTask('default', ['concat']);
+  grunt.registerTask('default', ['concat', 'uglify', 'watch']);
 
 };

@@ -176,41 +176,144 @@ function log(message) {
 	console.log(message);
 }
 var Game = {};
-Game.Bullets = function() {
+Game.Item = function() {
+	this.x             = 0;
+	this.y             = 0;
+	this.width         = 50;
+	this.height        = 30;
 
-	this.shoot = function(player) {
+	this.spriteCanvas  = null;
+	this.spritex       = 0;
+	this.spritey       = 0;
 
-		var bullet    = new Game.Bullet();
+	this.speedy        = 12;
+	this.initialSpeedy = 10;
 
-		/*bullet.spriteCanvas = sprite.getCanvas();
-		sprite.addShapeToSprite(player);*/
+	this.speedx        = 12;
+	this.initialSpeedx = 10;
 
-		bullet.x = player.x + player.width / 2;
-		bullet.y = player.y;
+	this.type          = "";
 
-		this.items.push(bullet);
-	};
+	this.color         = "#ff0099";
+
+	this.slowmode      = false;
+	this.spriteCanvas  = null;
 };
 
-Game.Bullets.prototype = new Game.GroupItem();
-
-
-Game.Bullet = function() {
-
-	this.width         = 2;
-	this.height        = 6;
-	this.type          = "bullet";
-
-	this.speedy        = -6;
-	this.initialSpeedy = this.speedy;
-
-	this.speedx        = 0;
-	this.initialSpeedx = this.speedx;
-
+Game.Item.prototype.update = function(x, y){
+	this.x = x;
+	this.y = y;
 };
 
-Game.Bullet.prototype = new Game.Item();
+Game.Item.prototype.updatey = function(y){
+	this.y = y;
+};
 
+Game.Item.prototype.updatex = function(x){
+	this.x = x;
+};
+
+Game.Item.prototype.render = function(ctx){
+	if(this.spriteCanvas)
+	{
+		ctx.drawImage(this.spriteCanvas, this.spritex, this.spritey, this.width, this.height, this.x, this.y, this.width, this.height);
+	}
+	else
+	{
+		ctx.fillStyle = this.color;
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
+};
+
+Game.Item.prototype.createShape = function(canvas, x, y) {
+	this.spriteCanvas = canvas;
+	this.spritex = x;
+	this.spritey = y;
+
+	var ctx = this.spriteCanvas.getContext('2d');
+};
+
+Game.GroupItem = function() {
+	this.items       = [];
+	this.slowmode    = false;
+	this.stageWidth  = 0;
+	this.stageHeight = 0;
+};
+
+Game.GroupItem.prototype.update = function(timePassed) {
+	timePassed = timePassed/10;
+
+	var u = this.items.length;
+	for (var t = 0; t < u; t++) {
+		var item = this.items[t];
+
+		if(!item) continue;
+
+		if(this.slowmode === true)
+		{
+			item.speedx   = item.initialSpeedx * 0.5;
+			item.speedy   = item.initialSpeedy * 0.5;
+		}
+		else
+		{
+			item.speedx   = item.initialSpeedx;
+			item.speedy   = item.initialSpeedy;
+		}
+
+		var tox = item.x + (item.speedx * timePassed);
+		var toy = item.y + (item.speedy * timePassed);
+
+		var offset = 200;
+		if(tox > this.stageWidth + offset ||
+			tox < 0 - item.width - offset ||
+			toy > this.stageHeight + offset ||
+			tox < 0 - offset)
+		{
+			this.kill(item);
+			continue;
+		}
+
+
+		item.update(tox, toy);
+	}
+};
+
+Game.GroupItem.prototype.updateStage = function(sw, sh) {
+	this.stageWidth  = sw;
+	this.stageHeight = sh;
+};
+
+Game.GroupItem.prototype.render = function(ctx) {
+	var u = this.items.length;
+
+	for (var t = 0; t < u; t++) {
+		this.items[t].render(ctx);
+	}
+};
+
+Game.GroupItem.prototype.slowDown = function() {
+	this.slowmode = true;
+};
+
+Game.GroupItem.prototype.resetSpeed = function() {
+	this.slowmode = false;
+};
+
+Game.GroupItem.prototype.getItems = function() {
+	return this.items;
+};
+
+Game.GroupItem.prototype.kill = function(killItem) {
+
+	var u = this.items.length;
+
+	for (var i = 0; i < u; i++) {
+		if(this.items[i] === killItem)
+		{
+			this.items.splice(i,1);
+		}
+	}
+};
 Game.Collision = function(sw, sh) {
 
 	var self         = this;
@@ -350,122 +453,6 @@ Game.Collision = function(sw, sh) {
 		ctx.fillText("Objects: " + l, area.x, area.y + 20);
 	};
 
-
-};
-Game.Enemies = function() {
-
-	var self = this;
-
-	this.lastSpawn     = 0;
-	this.spawningSpeed = 1; // per second
-	this.spawned       = 0;
-
-	var enemyTypes    = 10;
-
-	this.addEnemy = function(sprite) {
-		var enemy = new Game.Enemy();
-		enemy.x   = Math.random() * this.stageWidth;
-		enemy.y   = 0 - enemy.height;
-
-		self.items.push(enemy);
-
-		this.spawned++;
-
-		if(this.spawned > enemyTypes) {
-			var spri = sprite.getSpriteOfType('enemy');
-
-			enemy.spritex = spri.x;
-			enemy.spritey = spri.y;
-			enemy.spriteCanvas = sprite.getCanvas();
-		}
-
-		return enemy;
-	};
-};
-
-Game.Enemies.prototype = new Game.GroupItem();
-
-
-Game.Enemy = function(){
-	this.width         = 30;
-	this.height        = 30;
-
-	this.type          = "enemy";
-	this.color         = "#ff0000";
-
-	this.speedx        = Math.random()*2;
-	this.initialSpeedx = this.speedx;
-
-	this.speedy        = Math.random()*2;
-	this.initialSpeedy = this.speedy;
-
-	this.shape         = [];
-	this.size          = 0;
-};
-
-Game.Enemy.prototype = new Game.Item();
-
-
-Game.Enemy.prototype.createShape = function(canvas, x, y) {
-
-	if( this.spritex !== 0 || this.spritey !== 0 ) return false;
-
-	var rows      = 5;
-	var columns   = 5;
-	var tmpshape  = [];
-
-	var i = 0;
-	var c = 0;
-
-	this.spriteCanvas = canvas;
-	this.spritex = x;
-	this.spritey = y;
-
-	var ctx = this.spriteCanvas.getContext('2d');
-
-	this.size = this.width / columns-1;
-
-	for (i = 0; i < rows; i++) {
-
-		tmpshape[i] = [];
-
-		for (c = 0; c < Math.ceil(columns/2); c++) {
-
-			var draw = false;
-			if(Math.random() > 0.5)
-			{
-				draw = true;
-			}
-
-			tmpshape[i][c] = { x: this.size * c, y: this.size*i, draw: draw};
-		}
-	}
-
-	for (i = 0; i < tmpshape.length; i++) {
-
-		for (c = 0; c < tmpshape[i].length; c++) {
-			var newcol = columns-c;
-			tmpshape[i][newcol] = { x: newcol*this.size, y: tmpshape[i][c].y, draw: tmpshape[i][c].draw};
-
-		}
-	}
-
-	for (i = 0; i < tmpshape.length; i++) {
-
-		for (c = 0; c < tmpshape[i].length; c++) {
-			this.shape.push(tmpshape[i][c]);
-		}
-	}
-
-
-	ctx.fillStyle = this.color;
-
-	for (i = 0; i < this.shape.length; i++) {
-		if(this.shape[i].draw)
-		{
-			ctx.fillRect( this.spritex + this.shape[i].x, this.spritey + this.shape[i].y, this.size, this.size);
-		}
-	}
 
 };
 Game.Engine = function() {
@@ -748,6 +735,7 @@ Game.Engine = function() {
 	{
 		var touches = e.getPointerList();
 		var touch = touches[0];
+		if(!touch) return;
 		player.update(touch.clientX - player.width / 2, touch.clientY - player.height);
 	};
 
@@ -788,142 +776,157 @@ Game.Engine = function() {
 		}
 	};
 };
-Game.GroupItem = function() {
-	this.items       = [];
-	this.slowmode    = false;
-	this.stageWidth  = 0;
-	this.stageHeight = 0;
+Game.Bullets = function() {
+
+	this.shoot = function(player) {
+
+		var bullet    = new Game.Bullet();
+
+		/*bullet.spriteCanvas = sprite.getCanvas();
+		sprite.addShapeToSprite(player);*/
+
+		bullet.x = player.x + player.width / 2;
+		bullet.y = player.y;
+
+		this.items.push(bullet);
+	};
 };
 
-Game.GroupItem.prototype.update = function(timePassed) {
-	timePassed = timePassed/10;
+Game.Bullets.prototype = new Game.GroupItem();
 
-	var u = this.items.length;
-	for (var t = 0; t < u; t++) {
-		var item = this.items[t];
 
-		if(this.slowmode === true)
-		{
-			item.speedx   = item.initialSpeedx * 0.5;
-			item.speedy   = item.initialSpeedy * 0.5;
+Game.Bullet = function() {
+
+	this.width         = 2;
+	this.height        = 6;
+	this.type          = "bullet";
+
+	this.speedy        = -6;
+	this.initialSpeedy = this.speedy;
+
+	this.speedx        = 0;
+	this.initialSpeedx = this.speedx;
+
+};
+
+Game.Bullet.prototype = new Game.Item();
+
+Game.Enemies = function() {
+
+	var self = this;
+
+	this.lastSpawn     = 0;
+	this.spawningSpeed = 1; // per second
+	this.spawned       = 0;
+
+	var enemyTypes    = 10;
+
+	this.addEnemy = function(sprite) {
+		var enemy = new Game.Enemy();
+		enemy.x   = Math.random() * this.stageWidth;
+		enemy.y   = 0 - enemy.height;
+
+		self.items.push(enemy);
+
+		this.spawned++;
+
+		if(this.spawned > enemyTypes) {
+			var spri = sprite.getSpriteOfType('enemy');
+
+			enemy.spritex = spri.x;
+			enemy.spritey = spri.y;
+			enemy.spriteCanvas = sprite.getCanvas();
 		}
-		else
-		{
-			item.speedx   = item.initialSpeedx;
-			item.speedy   = item.initialSpeedy;
-		}
 
-		var tox = item.x + (item.speedx * timePassed);
-		var toy = item.y + (item.speedy * timePassed);
-
-		var offset = 200;
-		if(tox > this.stageWidth + offset ||
-			tox < 0 - item.width - offset ||
-			toy > this.stageHeight + offset ||
-			tox < 0 - offset)
-		{
-			this.kill(item);
-			continue;
-		}
-
-
-		item.update(tox, toy);
-	}
+		return enemy;
+	};
 };
 
-Game.GroupItem.prototype.updateStage = function(sw, sh) {
-	this.stageWidth  = sw;
-	this.stageHeight = sh;
-};
+Game.Enemies.prototype = new Game.GroupItem();
 
-Game.GroupItem.prototype.render = function(ctx) {
-	var u = this.items.length;
 
-	for (var t = 0; t < u; t++) {
-		this.items[t].render(ctx);
-	}
-};
-
-Game.GroupItem.prototype.slowDown = function() {
-	this.slowmode = true;
-};
-
-Game.GroupItem.prototype.resetSpeed = function() {
-	this.slowmode = false;
-};
-
-Game.GroupItem.prototype.getItems = function() {
-	return this.items;
-};
-
-Game.GroupItem.prototype.kill = function(killItem) {
-
-	var u = this.items.length;
-
-	for (var i = 0; i < u; i++) {
-		if(this.items[i] === killItem)
-		{
-			this.items.splice(i,1);
-		}
-	}
-};
-Game.Item = function() {
-	this.x             = 0;
-	this.y             = 0;
-	this.width         = 50;
+Game.Enemy = function(){
+	this.width         = 30;
 	this.height        = 30;
 
-	this.spriteCanvas  = null;
-	this.spritex       = 0;
-	this.spritey       = 0;
+	this.type          = "enemy";
+	this.color         = "#ff0000";
 
-	this.speedy        = 12;
-	this.initialSpeedy = 10;
+	this.speedx        = Math.random()*2;
+	this.initialSpeedx = this.speedx;
 
-	this.speedx        = 12;
-	this.initialSpeedx = 10;
+	this.speedy        = Math.random()*2;
+	this.initialSpeedy = this.speedy;
 
-	this.type          = "";
-
-	this.color         = "#ff0099";
-
-	this.slowmode      = false;
-	this.spriteCanvas  = null;
+	this.shape         = [];
+	this.size          = 0;
 };
 
-Game.Item.prototype.update = function(x, y){
-	this.x = x;
-	this.y = y;
-};
+Game.Enemy.prototype = new Game.Item();
 
-Game.Item.prototype.updatey = function(y){
-	this.y = y;
-};
 
-Game.Item.prototype.updatex = function(x){
-	this.x = x;
-};
+Game.Enemy.prototype.createShape = function(canvas, x, y) {
 
-Game.Item.prototype.render = function(ctx){
-	if(this.spriteCanvas)
-	{
-		ctx.drawImage(this.spriteCanvas, this.spritex, this.spritey, this.width, this.height, this.x, this.y, this.width, this.height);
-	}
-	else
-	{
-		ctx.fillStyle = this.color;
-		ctx.fillRect(this.x, this.y, this.width, this.height);
-	}
-};
+	if( this.spritex !== 0 || this.spritey !== 0 ) return false;
 
-Game.Item.prototype.createShape = function(canvas, x, y) {
+	var rows      = 5;
+	var columns   = 5;
+	var tmpshape  = [];
+
+	var i = 0;
+	var c = 0;
+
 	this.spriteCanvas = canvas;
 	this.spritex = x;
 	this.spritey = y;
 
 	var ctx = this.spriteCanvas.getContext('2d');
-};
 
+	this.size = this.width / columns-1;
+
+	for (i = 0; i < rows; i++) {
+
+		tmpshape[i] = [];
+
+		for (c = 0; c < Math.ceil(columns/2); c++) {
+
+			var draw = false;
+			if(Math.random() > 0.5)
+			{
+				draw = true;
+			}
+
+			tmpshape[i][c] = { x: this.size * c, y: this.size*i, draw: draw};
+		}
+	}
+
+	for (i = 0; i < tmpshape.length; i++) {
+
+		for (c = 0; c < tmpshape[i].length; c++) {
+			var newcol = columns-c;
+			tmpshape[i][newcol] = { x: newcol*this.size, y: tmpshape[i][c].y, draw: tmpshape[i][c].draw};
+
+		}
+	}
+
+	for (i = 0; i < tmpshape.length; i++) {
+
+		for (c = 0; c < tmpshape[i].length; c++) {
+			this.shape.push(tmpshape[i][c]);
+		}
+	}
+
+
+	ctx.fillStyle = this.color;
+
+	for (i = 0; i < this.shape.length; i++) {
+		if(this.shape[i].draw)
+		{
+			ctx.fillRect( this.spritex + this.shape[i].x, this.spritey + this.shape[i].y, this.size, this.size);
+		}
+	}
+
+};
 Game.Particles = function() {
 
 	var amount = 20;
